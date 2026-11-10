@@ -49,8 +49,8 @@ A demo that looks and behaves like the pilot version, built in phases:
 | Phase | Scope | Status |
 |---|---|---|
 | 1 | Engine: chart time, eligibility, trigger, flight matching, market, plus tests | ✅ Done |
-| 2 | Seed data, mock services, store with cross-tab sync, demo clock | ⏳ Next |
-| 3 | Passenger flow (phone-first) | — |
+| 2 | Seed data, mock services, store with cross-tab sync, demo clock | ✅ Done |
+| 3 | Passenger flow (phone-first) | ⏳ Next |
 | 4 | Airline dashboard (desktop-first) | — |
 | 5 | Demo bar, presenter mode, ops view, polish | — |
 | 6 | Deploy and presenter guide | — |
@@ -68,7 +68,30 @@ Pure TypeScript with no UI code, so it can move to a server unchanged.
 | `trigger.ts` | After the chart: whether the order enters the market or closes because the train was confirmed |
 | `flights.ts` | How many seats a flight releases, and which flights an order can use |
 | `market.ts` | Uniform-price auction per flight. Groups are all-or-nothing; losers roll on to the next usable flight |
+| `payment.ts` | Block amount (full, or a 20% deposit) and how a block is split after the market |
 | `engine.test.ts` | 31 tests, including every required case from the build plan |
+
+### Data, services and store
+
+| Path | What it does |
+|---|---|
+| `src/data/seed.ts` | Seeded generator: fictional airline Nilambar Air, 3 routes, 8 flights, about 40 background orders and the 8 sample PNRs. Identical every time |
+| `src/services/` | PNR, inventory, payments, notifications and ticketing interfaces, each with a mock that waits 300–800 ms |
+| `src/store/demoStore.ts` | Demo state and actions (place order, prepare chart, run market, next day, reset). Saved in the browser and synced live across tabs |
+| `src/app/debug` | Check page at `/debug`: demo clock buttons, PNR lookup, flights, market runs and orders |
+
+### Sample PNRs
+
+| PNR | Case |
+|---|---|
+| 4512300001 | WL, stays WL: main winning path |
+| 4512300002 | WL, gets confirmed: order closes itself |
+| 4512300003 | RAC: the RAC choice |
+| 4512300004 | Family of 4, two confirm: group choice |
+| 4512300005 | Booked the day before travel: ineligible |
+| 4512300006 | Sleeper class: ineligible |
+| 4512300007 | No airport nearby: ineligible |
+| 4512300008 | Low bid: enters the market, does not win |
 
 ## Running it
 
@@ -77,7 +100,7 @@ Requires Node.js 22 or later.
 ```bash
 npm install
 npm test        # run the engine tests
-npm run dev     # start the app (pages arrive in Phase 2 onward)
+npm run dev     # then open http://localhost:3000/debug
 ```
 
 ## Tech

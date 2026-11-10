@@ -26,4 +26,8 @@ export const CONFIG = {
   market: {
     commissionRate: 0.08,
   },
+
+  payments: {
+    depositRate: 0.2, // deposit block = 20% of max price × seats
+  },
 };
